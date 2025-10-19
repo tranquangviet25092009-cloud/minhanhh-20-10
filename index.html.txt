@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy 20/10 — Minh Anh</title>
+  <style>
+    /* Reset */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      background:#000; /* nền đen */
+      color:#fff;
+      font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;
+      overflow:hidden;
+      display:flex;align-items:center;justify-content:center;
+    }
+
+    /* Canvas trái tim */
+    #heartCanvas{position:fixed;left:0;top:0;width:100%;height:100%;z-index:0}
+
+    /* Trung tâm nội dung */
+    .stage{
+      position:relative;z-index:5;display:flex;align-items:center;justify-content:center;flex-direction:column;
+      width:min(900px,92vw);height:min(900px,92vw);
+    }
+
+    /* Vòng tròn chứa chữ chạy */
+    .circle-wrap{position:relative;width:420px;height:420px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .circle{width:360px;height:360px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center}
+
+    /* chữ chạy quanh vòng */
+    .orbit-text{
+      position:absolute;left:50%;top:50%;width:360px;height:360px;margin-left:-180px;margin-top:-180px;border-radius:50%;
+      pointer-events:none;filter:drop-shadow(0 6px 12px rgba(255,0,128,0.15));
+    }
+    .orbit-text .char{position:absolute;left:50%;top:50%;transform-origin:0  -160px; font-weight:700; color:#ff9fcf; text-shadow:0 2px 10px rgba(0,0,0,0.6)}
+
+    /* Logo Hello Kitty (placeholder frame) */
+    .center-logo{
+      width:160px;height:160px;border-radius:50%;background:linear-gradient(180deg,#ffd6e8,#ff9fcf);display:flex;align-items:center;justify-content:center;flex-direction:column;box-shadow:0 10px 30px rgba(255,100,180,0.18);
+      border:6px solid rgba(255,255,255,0.06);
+    }
+    .center-logo img{width:128px;height:128px;object-fit:contain}
+
+    /* Lời chúc list */
+    .messages{
+      margin-top:20px;width:100%;max-width:640px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.00));padding:16px;border-radius:12px;backdrop-filter:blur(4px);
+      box-shadow:0 6px 18px rgba(0,0,0,0.6);
+    }
+    .messages h2{font-size:20px;color:#ffdaef;margin-bottom:10px;text-align:center}
+    .messages ol{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+    .messages li{padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);font-size:14px}
+
+    /* nhẹ nhàng sparkle */
+    .sparkle{position:absolute;left:50%;top:50%;width:100%;height:100%;pointer-events:none;z-index:2}
+
+    /* responsive */
+    @media(max-width:520px){.circle-wrap{width:320px;height:320px}.center-logo{width:120px;height:120px}.orbit-text{width:280px;height:280px;margin-left:-140px;margin-top:-140px}.orbit-text .char{transform-origin:0 -120px}}
+
+  </style>
+</head>
+<body>
+  <canvas id="heartCanvas"></canvas>
+
+  <div class="stage" role="main" aria-label="Thiệp 20/10 cho Minh Anh">
+    <div class="circle-wrap">
+      <div class="orbit-text" id="orbitText" aria-hidden="true"></div>
+
+      <div class="circle" aria-hidden="true">
+        <div class="center-logo" title="Hello Kitty (thay bằng ảnh Hello Kitty hồng)">
+          <!-- Thay ảnh bằng file hello-kitty-pink.png trong cùng thư mục -->
+          <img src="hello-kitty-pink.png" alt="Hello Kitty" onerror="this.style.opacity=0.9;this.outerHTML='<svg width=120 height=120 viewBox=\"0 0 120 120\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=60 cy=60 r=58 fill=\"#ffd6e8\" /><g transform=\"translate(20,18) scale(0.8)\"><path d=\"M30 6c0-3 3-6 6-6s6 3 6 6c0 3-3 6-6 6s-6-3-6-6z\" fill=\"#fff\"/></g></svg>'">
+        </div>
+      </div>
+    </div>
+
+    <div class="messages" id="messagesBox">
+      <h2>Chúc mừng 20/10 — Minh Anh 💖</h2>
+      <ol id="msgList">
+        <!-- Các lời chúc sẽ fill bằng JS -->
+      </ol>
+    </div>
+  </div>
+
+  <div class="sparkle" id="sparkleLayer"></div>
+
+  <script>
+    // --- Dữ liệu lời chúc ---
+    const messages = [
+      "Chúc Minh Anh luôn rạng rỡ như ánh nắng ban mai, dịu dàng mà vẫn đầy năng lượng.",
+      "Chúc cô gái tên Minh Anh xinh đẹp mỗi ngày đều mỉm cười thật tươi, vì bạn xứng đáng với mọi điều tốt đẹp nhất!",
+      "Chúc Minh Anh có một ngày 20/10 ngập tràn hoa, quà và những lời yêu thương chân thành nhất.",
+      "Không chỉ hôm nay mà cả 364 ngày còn lại, mong Minh Anh luôn được yêu thương, trân trọng và hạnh phúc.",
+      "Chúc cho nụ cười của Minh Anh sẽ luôn là nguồn năng lượng tích cực cho mọi người xung quanh.",
+      "Minh Anh ơi, hãy cứ tự tin, xinh đẹp và tỏa sáng như chính con người tuyệt vời của bạn nhé!",
+      "Ngày 20/10, mong mọi ước mơ của Minh Anh đều trở thành hiện thực, theo cách dịu dàng nhất.",
+      "Chúc Minh Anh luôn vui tươi, học giỏi, thành công trong mọi điều mình chọn — và đừng quên cười mỗi ngày nhé!",
+      "Nếu hạnh phúc là một đoá hoa, chúc Minh Anh có cả một vườn hoa nở rộ quanh mình hôm nay!",
+      "20/10 chỉ có một, nhưng Minh Anh thì luôn đặc biệt — vì bạn mang đến sự ấm áp cho mọi người quanh bạn."
+    ];
+
+    // --- Điền danh sách lời chúc ---
+    const msgList = document.getElementById('msgList');
+    messages.forEach((m)=>{
+      const li = document.createElement('li'); li.innerText = m; msgList.appendChild(li);
+    });
+
+    // --- Tạo chữ chạy quanh vòng tròn ---
+    const orbit = document.getElementById('orbitText');
+    const title = '   ★  Happy 20/10 — Minh Anh  ★   ';
+    const full = title.repeat(6); // lặp để đủ vòng
+
+    function buildOrbit(text){
+      orbit.innerHTML='';
+      const R = orbit.clientWidth/2;
+      const chars = Array.from(text);
+      const degStep = 360 / chars.length;
+      chars.forEach((ch,i)=>{
+        const span = document.createElement('span');
+        span.className='char';
+        span.style.transform = `rotate(${i*degStep}deg)`;
+        span.style.left = '50%'; span.style.top='50%';
+        span.textContent = ch;
+        orbit.appendChild(span);
+      });
+    }
+    buildOrbit(full);
+
+    // rotate animation (gentle)
+    let rot = 0;
+    function animateOrbit(){
+      rot += 0.06; // tốc độ
+      orbit.style.transform = `rotate(${rot}deg)`;
+      requestAnimationFrame(animateOrbit);
+    }
+    animateOrbit();
+
+    // --- Canvas trái tim nhẹ nhàng ---
+    const canvas = document.getElementById('heartCanvas');
+    const ctx = canvas.getContext('2d');
+    function resize(){canvas.width=innerWidth;canvas.height=innerHeight}
+    window.addEventListener('resize',resize); resize();
+
+    const hearts = [];
+    function rand(min,max){return Math.random()*(max-min)+min}
+    function createHeart(){
+      hearts.push({x:rand(0,canvas.width),y:canvas.height+20, vx:rand(-0.3,0.3), vy:rand(-1.2,-0.4), size:rand(8,26), alpha:rand(0.4,0.9)})
+    }
+    for(let i=0;i<18;i++) createHeart();
+
+    function drawHeart(x,y,size,alpha){
+      ctx.save(); ctx.translate(x,y); ctx.scale(size/20,size/20); ctx.globalAlpha=alpha;
+      ctx.beginPath(); ctx.moveTo(0,-7);
+      ctx.bezierCurveTo(-8,-28,-38,-18,-38,-2);
+      ctx.bezierCurveTo(-38,16,-18,28,0,40);
+      ctx.bezierCurveTo(18,28,38,16,38,-2);
+      ctx.bezierCurveTo(38,-18,8,-28,0,-7);
+      ctx.closePath(); ctx.fillStyle='#ff9fcf'; ctx.fill();
+      ctx.restore();
+    }
+
+    function tick(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      if(Math.random()<0.06) createHeart();
+      for(let i=hearts.length-1;i>=0;i--){
+        const h = hearts[i]; h.x += h.vx; h.y += h.vy; h.alpha -= 0.002;
+        drawHeart(h.x,h.y,h.size,h.alpha);
+        if(h.y < -60 || h.alpha<=0) hearts.splice(i,1);
+      }
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    // --- Sparkles around center (gentle) ---
+    const sparkleLayer = document.getElementById('sparkleLayer');
+    const splCtx = document.createElement('canvas');
+    splCtx.width = innerWidth; splCtx.height = innerHeight; sparkleLayer.appendChild(splCtx);
+
+    // fallback simple CSS sparkles using small DOM elements
+    function makeSparkles(){
+      for(let i=0;i<18;i++){
+        const s = document.createElement('div');
+        s.style.position='absolute'; s.style.width=s.style.height='6px'; s.style.borderRadius='50%';
+        s.style.left = `${50+Math.cos(i)*18}%`; s.style.top = `${50+Math.sin(i)*18}%`;
+        s.style.transform='translate(-50%,-50%)'; s.style.opacity=0.9; s.style.boxShadow='0 0 12px rgba(255,200,240,0.7)';
+        sparkleLayer.appendChild(s);
+        (function(el){
+          let t=0; function a(){t+=0.02; el.style.transform = `translate(-50%,-50%) scale(${1+0.08*Math.sin(t*6)})`; requestAnimationFrame(a);} a();
+        })(s);
+      }
+    }
+    makeSparkles();
+
+    // Accessibility: focus to messages
+    document.addEventListener('keydown',e=>{ if(e.key==='m') document.getElementById('messagesBox').focus() })
+
+    // Small: allow copying messages as text
+    const box = document.getElementById('messagesBox');
+    box.tabIndex = -1;
+
+  </script>
+</body>
+</html>
