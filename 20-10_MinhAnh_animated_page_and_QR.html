@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy 20/10 Minh Anh 💖</title>
+<style>
+body {
+  margin: 0;
+  background-color: #000;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: #fff;
+  font-family: "Comic Sans MS", cursive;
+}
+
+/* Trái tim bay */
+.heart {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: pink;
+  transform: rotate(45deg);
+  animation: floatUp 6s linear infinite;
+}
+.heart::before,
+.heart::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: pink;
+  border-radius: 50%;
+}
+.heart::before { top: -10px; left: 0; }
+.heart::after { left: 10px; top: 0; }
+
+@keyframes floatUp {
+  0% { transform: translateY(0) rotate(45deg); opacity: 1; }
+  100% { transform: translateY(-100vh) rotate(45deg); opacity: 0; }
+}
+
+/* Hello Kitty và QR */
+#kitty {
+  position: relative;
+  width: 220px;
+  height: auto;
+}
+#qr {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 90px;
+  height: 90px;
+  transform: translate(-50%, -50%);
+  border-radius: 10px;
+  background: url('https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=https://tranquangviet25092009-cloud.github.io/minhanh-20-10/') no-repeat center/cover;
+  box-shadow: 0 0 10px pink;
+}
+
+/* Chữ chạy vòng tròn */
+.circle-text {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  animation: spin 10s linear infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.circle-text span {
+  position: absolute;
+  transform-origin: 0 150px;
+  font-size: 18px;
+  color: pink;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Lời chúc */
+.wishes {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-size: 18px;
+  animation: fadeIn 2s ease-in-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hiệu ứng trái tim -->
+<script>
+for(let i=0;i<20;i++){
+  const heart=document.createElement('div');
+  heart.className='heart';
+  heart.style.left=Math.random()*100+'vw';
+  heart.style.animationDelay=Math.random()*5+'s';
+  heart.style.background=`hsl(${Math.random()*60+330},100%,70%)`;
+  document.body.appendChild(heart);
+}
+</script>
+
+<div class="circle-text" id="circle"></div>
+
+<div id="kitty">
+  <img src="https://raw.githubusercontent.com/tranquangviet25092009-cloud/minhanh-20-10/main/hello-kitty-pink.png" width="220" alt="Hello Kitty">
+  <div id="qr"></div>
+</div>
+
+<div class="wishes" id="wishes"></div>
+
+<script>
+// Chữ chạy vòng quanh
+const text = "💖 Happy 20/10 Minh Anh 💖 ";
+const circle = document.getElementById('circle');
+for(let i=0;i<text.length;i++){
+  const span=document.createElement('span');
+  span.innerText=text[i];
+  span.style.transform=`rotate(${i*10}deg)`;
+  circle.appendChild(span);
+}
+
+// Lời chúc
+const wishesList = [
+  "Chúc Minh Anh luôn xinh đẹp, rạng rỡ và hạnh phúc 🌸",
+  "Chúc ngày 20/10 của bạn thật ngọt ngào như chính bạn 💖",
+  "Mỗi ngày đều là một món quà, hãy mỉm cười nhé Minh Anh 🎀",
+  "Chúc bạn mãi là bông hoa đẹp nhất trong vườn yêu thương 🌷",
+  "Hôm nay là ngày của bạn, hãy tỏa sáng thật rực rỡ ✨",
+  "Chúc bạn luôn vui vẻ, an nhiên và nhiều điều may mắn 🍀",
+  "Tặng bạn ngàn lời yêu thương cùng ngàn đóa hồng 🌹",
+  "Chúc nụ cười bạn luôn rạng ngời như nắng 20/10 ☀️",
+  "Hy vọng bạn luôn được yêu thương và trân trọng 💕",
+  "Gửi đến Minh Anh muôn ngàn lời chúc đẹp nhất 💌"
+];
+let i = 0;
+setInterval(()=>{
+  document.getElementById("wishes").innerText = wishesList[i];
+  i = (i+1)%wishesList.length;
+},3000);
+</script>
+
+</body>
+</html>
